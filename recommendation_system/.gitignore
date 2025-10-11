@@ -31,3 +31,23 @@ build/
 
 ### VS Code ###
 .vscode/
+ 
+# Python virtual environments and metadata
+venv/
+.venv/
+.env
+__pycache__/
+*.py[cod]
+pip-wheel-metadata/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Ignore data files but keep the clean notebook/script used for processing
+# (adjust paths if your files are elsewhere)
+src/main/resources/data/*
+!src/main/resources/data/clean.ipynb
+!src/main/resources/data/clean_data.py
+
+# If you have other large artifacts, add them here (e.g., model weights, large zips)
