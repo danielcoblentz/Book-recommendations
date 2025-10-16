@@ -1,43 +1,53 @@
-package main.java.com.book_recs.demo.model;
+package com.book_recs.demo.model;
 
-import javax.annotation.processing.Generated;
+import javax.persistence.Column;
+import jakarta.persistence.GenerationType;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Table(name = "books")
-@Entitty
+@Entity
 public class Book {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private string id;
+    private String id;
 
     @Column(nullable = false, length = 300)
     private long goodreads_book_id;
 
     @Column(nullable = false, length = 500)
-    private string title;
+    private String title;
 
     @Column(length = 1000)
-    private string isbn;
+    private String isbn;
 
     @Column(length = 500)
-    private string authors;
+    private String authors;
 
     @Column(length = 1000)
     private int published_year;
 
     @Column(length = 1000)
-    private string description;
+    private String description;
    
     
     @Column(length = 1000)
-    private string cover_url;
+    private String cover_url;
 
 
     @Column(length = 1000)
-    private string language_code;
+    private String language_code;
     // Getters and Setters
-    // Default constructor (required by JPA)
+    // Default constructor 
     public Book() {}
+    public String getId() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getId'");
+    }
 
     
 };

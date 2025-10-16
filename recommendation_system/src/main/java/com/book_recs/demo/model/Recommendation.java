@@ -1,8 +1,5 @@
-package main.java.com.book_recs.demo.model;
-
+package com.book_recs.demo.model;
 import jakarta.persistence.*;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 /**
  * JPA entity representing a single recommendation run for a user.
