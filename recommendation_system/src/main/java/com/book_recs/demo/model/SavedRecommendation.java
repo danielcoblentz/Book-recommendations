@@ -1,4 +1,4 @@
-package com.book_recs.demo.model;
+package com/book_recs/demo/model;
 import jakarta.persistence.*;
 import java.util.UUID;
 import java.time.OffsetDateTime;

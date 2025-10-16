@@ -51,3 +51,5 @@ src/main/resources/data/*
 !src/main/resources/data/clean_data.py
 
 # If you have other large artifacts, add them here (e.g., model weights, large zips)
+
+/recommendation_system/.env
