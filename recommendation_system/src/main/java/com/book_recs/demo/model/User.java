@@ -2,6 +2,9 @@ package main.java.com.book_recs.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
@@ -37,8 +40,7 @@ public class User implements UserDetails{
     }
 
     //defualt constructor
-    public User() {
-    }
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

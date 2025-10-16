@@ -7,6 +7,8 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "recommendations")
+@Getter
+@Setter
 public class Recommendation {
 
     @Id
@@ -31,24 +33,4 @@ public class Recommendation {
     public Recommendation() {
         this.id = UUID.randomUUID();
         this.createdAt = OffsetDateTime.now();
-    }
-
-    // Getters and setters
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-
-    public String getAlgo() { return algo; }
-    public void setAlgo(String algo) { this.algo = algo; }
-
-    public String getModelVersion() { return modelVersion; }
-    public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
-
-    public String getParams() { return params; }
-    public void setParams(String params) { this.params = params; }
-
-    public OffsetDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-}
+    }};

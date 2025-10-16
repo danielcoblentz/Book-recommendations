@@ -2,10 +2,14 @@ package main.java.com.book_recs.demo.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Entity
 @Table(name = "recommendation_items")
+@Getter
+@Setter
 public class RecommendationItem implements Serializable {
 
     @EmbeddedId
@@ -28,18 +32,6 @@ public class RecommendationItem implements Serializable {
         this.score = score;
         this.reason = reason;
     }
-
-    public RecommendationItemId getId() { return id; }
-    public void setId(RecommendationItemId id) { this.id = id; }
-
-    public Long getBookId() { return bookId; }
-    public void setBookId(Long bookId) { this.bookId = bookId; }
-
-    public Double getScore() { return score; }
-    public void setScore(Double score) { this.score = score; }
-
-    public String getReason() { return reason; }
-    public void setReason(String reason) { this.reason = reason; }
 }
 
 @Embeddable

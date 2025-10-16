@@ -1,10 +1,14 @@
-package com/book_recs/demo/model;
+package main.java.com.book_recs.demo.model; 
 import jakarta.persistence.*;
 import java.util.UUID;
 import java.time.OffsetDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "saved_recommendations")
+@Getter
+@Setter
 public class SavedRecommendation {
 
     @Id
