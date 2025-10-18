@@ -1,4 +1,4 @@
-package com.book_recs.demo.config;
+package main.java.com.book_recs.demo.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +28,7 @@ public class EmailConfiguration {
         mailSender.setUsername(emailUsername);   
         mailSender.setPassword(password);        
 
-        // Configure additional mail properties
+        // configure additional mail properties
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");           
         props.put("mail.smtp.auth", "true");                   
