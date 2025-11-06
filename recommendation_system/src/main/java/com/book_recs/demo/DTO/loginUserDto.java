@@ -1,4 +1,4 @@
-package com.book_recs.demo.dto;
+package main.java.com.book_recs.demo.DTO;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

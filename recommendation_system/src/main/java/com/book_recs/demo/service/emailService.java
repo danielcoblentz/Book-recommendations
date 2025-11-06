@@ -1,4 +1,4 @@
-package com.book_recs.demo.service;
+package main.java.com.book_recs.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
