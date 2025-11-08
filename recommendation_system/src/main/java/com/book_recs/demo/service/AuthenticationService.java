@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -42,10 +43,10 @@ public class AuthenticationService {
         this.emailService = emailService;
     }
 
-     //Create a new user account, generate a verification code, and send email.
+     //create a new user account, generate a verification code, and send email.
 
     public User signup(RegisterUserDto input) {
-        // Basic uniqueness checks
+        //  uniqueness checks
         userRepository.findByUsername(input.getUsername()).ifPresent(u -> {
             throw new IllegalArgumentException("Username already in use");
         });
@@ -58,7 +59,7 @@ public class AuthenticationService {
         user.setUsername(input.getUsername());
         user.setEmail(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
-        user.setEnabled(false);
+        user.setEnabled(false); // since the suer did not verify yet, default to false
 
         String code = generateVerificationCode();
         user.setVerificationCode(code);
@@ -73,25 +74,19 @@ public class AuthenticationService {
     }
 
 
-     // Authenticate an existing user by username and password
-     
+     // authenticate an existing user by username and password
     public User authenticate(LoginUserDto input) {
-        User user = userRepository.findByUsername(input.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByUsername(input.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (!user.isEnabled()) {
-            throw new DisabledException("User account is not verified");
+            throw new RuntimeException("User account is not verified");
         }
-
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(input.getUsername(), input.getPassword()));
-
         return user;
     }
 
-    /**
-     * Verify user's email using the provided code enables the account on success
-     */
+     //verify user's email using the provided code enables the account on success
     public void verifyUser(VerifyUserDto input) {
         Optional<User> userOpt = userRepository.findByEmail(input.getEmail());
         if (userOpt.isEmpty()) {
@@ -101,15 +96,15 @@ public class AuthenticationService {
         User user = userOpt.get();
 
         if (user.getVerificationCode() == null || user.getVerificationCodeExpiry() == null) {
-            throw new IllegalStateException("No verification code found for user");
+            throw new IllegalStateException("no verification code found for user");
         }
 
         if (!user.getVerificationCode().equals(input.getVerificationCode())) {
-            throw new IllegalArgumentException("Invalid verification code");
+            throw new IllegalArgumentException("invalid verification code");
         }
 
         if (user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Verification code has expired");
+            throw new IllegalArgumentException("verification code has expired");
         }
 
         user.setEnabled(true);
@@ -126,8 +121,47 @@ public class AuthenticationService {
         return Integer.toString(code);
     }
 
-    // Send verification email with the current code
+    // Send verification email with the current code via an HTML form
     private void sendVerificationEmail(User user) {
-        emailService.sendVerificationEmail(user.getEmail(), user.getVerificationCode());
+        String subject = "Account Verification";
+        String verificationCode = user.getVerificationCode();
+        String htmlMessage = "<html>" +
+                "<head>" +
+                "<style>" +
+                "body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }" +
+                ".container { max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }" +
+                ".header { text-align: center; color: #333; margin-bottom: 30px; }" +
+                ".verification-form { background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }" +
+                ".code-display { font-size: 32px; font-weight: bold; color: #007bff; letter-spacing: 3px; margin: 15px 0; }" +
+                ".instructions { color: #666; margin-bottom: 20px; }" +
+                ".footer { text-align: center; color: #888; font-size: 12px; margin-top: 30px; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='container'>" +
+                "<h1 class='header'>Welcome to Book Recommendations!</h1>" +
+                "<p>Hello " + user.getUsername() + ",</p>" +
+                "<p>Thank you for registering! Please verify your email address to activate your account.</p>" +
+                "<div class='verification-form'>" +
+                "<h3>Your Verification Code</h3>" +
+                "<div class='code-display'>" + verificationCode + "</div>" +
+                "<p class='instructions'>Enter this code in the verification form to complete your registration.</p>" +
+                "<p><strong>Note:</strong> This code will expire in 15 minutes.</p>" +
+                "</div>" +
+                "<p>If you didn't create this account, please ignore this email.</p>" +
+                "<div class='footer'>" +
+                "<p>This is an automated message from Book Recommendations System.</p>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+                
+        // Try to send the email to the user else print debug to terminal
+        try {
+            emailService.sendEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            log.error("Failed to send verification email to {}: {}", user.getEmail(), e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

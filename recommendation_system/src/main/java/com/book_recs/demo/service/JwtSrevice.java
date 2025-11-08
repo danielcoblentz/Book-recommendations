@@ -8,7 +8,7 @@ public class JwtSrevice {
     private String secretKey;
 
     @Value("security.jwt.expiration-ms")
-    private Long jwtExpirationMs; // 3600ms from application properties
+    private Long jwtExpirationMs; // exp time we can modify this later from 3600ms 
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

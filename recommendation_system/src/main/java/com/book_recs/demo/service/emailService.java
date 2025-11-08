@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Service for sending emails (e.g., verification codes).
- * Uses JavaMailSender configured in EmailConfiguration.
- */
+
+ //Service for sending emails.
+ 
 @Service
 public class emailService {
 
@@ -20,23 +19,17 @@ public class emailService {
 
     private final JavaMailSender mailSender;
 
-    // Optional: default "from" address pulled from configuration
     @Value("${spring.mail.username:}")
     private String from;
 
-    // Prefer constructor injection
     @Autowired
     public emailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
+    // @param toEmail recipient address
+    // @param verificationCode 
+    // @throws MailException
 
-    /**
-     * Sends a simple verification email with a plaintext code.
-     *
-     * @param toEmail recipient address
-     * @param verificationCode code to include in the message
-     * @throws MailException if sending fails
-     */
     public void sendVerificationEmail(String toEmail, String verificationCode) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
