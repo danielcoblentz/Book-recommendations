@@ -164,4 +164,23 @@ public class AuthenticationService {
             e.printStackTrace();
         }
     }
+
+    // Add missing method for resending verification codes
+    public void resendVerificationCode(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found for email: " + email));
+        
+        if (user.isEnabled()) {
+            throw new IllegalStateException("User account is already verified");
+        }
+        
+        String newCode = generateVerificationCode();
+        user.setVerificationCode(newCode);
+        user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(15));
+        
+        userRepository.save(user);
+        sendVerificationEmail(user);
+        
+        log.info("Verification code resent to {}", user.getEmail());
+    }
 }
