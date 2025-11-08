@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * Handles user signup, authentication, and email verification.
+ * Handles user signup, login, and email verification
  */
 @Service
 public class AuthenticationService {
@@ -43,10 +43,9 @@ public class AuthenticationService {
         this.emailService = emailService;
     }
 
-     //create a new user account, generate a verification code, and send email.
-
+    // Create new user account and send verification email
     public User signup(RegisterUserDto input) {
-        //  uniqueness checks
+        // Check if username or email already exists
         userRepository.findByUsername(input.getUsername()).ifPresent(u -> {
             throw new IllegalArgumentException("Username already in use");
         });
@@ -54,18 +53,18 @@ public class AuthenticationService {
             throw new IllegalArgumentException("Email already in use");
         });
 
-        // build user and set verification fields
+        // Create user with verification code
         User user = new User();
         user.setUsername(input.getUsername());
         user.setEmail(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
-        user.setEnabled(false); // since the suer did not verify yet, default to false
+        user.setEnabled(false); // user needs to verify email first
 
         String code = generateVerificationCode();
         user.setVerificationCode(code);
         user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(15));
 
-        //  send verification email
+        // Save user and send email
         User saved = userRepository.save(user);
         sendVerificationEmail(saved);
 
@@ -73,8 +72,7 @@ public class AuthenticationService {
         return saved;
     }
 
-
-     // authenticate an existing user by username and password
+    // Log in existing user
     public User authenticate(LoginUserDto input) {
         User user = userRepository.findByUsername(input.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -86,7 +84,7 @@ public class AuthenticationService {
         return user;
     }
 
-     //verify user's email using the provided code enables the account on success
+    // Verify user email with code
     public void verifyUser(VerifyUserDto input) {
         Optional<User> userOpt = userRepository.findByEmail(input.getEmail());
         if (userOpt.isEmpty()) {
@@ -96,17 +94,18 @@ public class AuthenticationService {
         User user = userOpt.get();
 
         if (user.getVerificationCode() == null || user.getVerificationCodeExpiry() == null) {
-            throw new IllegalStateException("no verification code found for user");
+            throw new IllegalStateException("No verification code found for user");
         }
 
         if (!user.getVerificationCode().equals(input.getVerificationCode())) {
-            throw new IllegalArgumentException("invalid verification code");
+            throw new IllegalArgumentException("Invalid verification code");
         }
 
         if (user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("verification code has expired");
+            throw new IllegalArgumentException("Verification code has expired");
         }
 
+        // Enable account and clear verification code
         user.setEnabled(true);
         user.setVerificationCode(null);
         user.setVerificationCodeExpiry(null);
@@ -115,13 +114,13 @@ public class AuthenticationService {
         log.info("User {} verified successfully", user.getEmail());
     }
 
-    // Generate a 6-digit numeric code
+    // Generate random 6-digit code
     private String generateVerificationCode() {
         int code = 100000 + RANDOM.nextInt(900000);
         return Integer.toString(code);
     }
 
-    // Send verification email with the current code via an HTML form
+    // Send HTML email with verification code
     private void sendVerificationEmail(User user) {
         String subject = "Account Verification";
         String verificationCode = user.getVerificationCode();
@@ -156,7 +155,7 @@ public class AuthenticationService {
                 "</body>" +
                 "</html>";
                 
-        // Try to send the email to the user else print debug to terminal
+        // Try sending email, log error if it fails
         try {
             emailService.sendEmail(user.getEmail(), subject, htmlMessage);
         } catch (MessagingException e) {
@@ -165,7 +164,7 @@ public class AuthenticationService {
         }
     }
 
-    // Add missing method for resending verification codes
+    // Send new verification code to user
     public void resendVerificationCode(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User not found for email: " + email));
@@ -174,6 +173,7 @@ public class AuthenticationService {
             throw new IllegalStateException("User account is already verified");
         }
         
+        // Generate new code and update user
         String newCode = generateVerificationCode();
         user.setVerificationCode(newCode);
         user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(15));

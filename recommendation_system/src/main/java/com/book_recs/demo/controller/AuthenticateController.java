@@ -35,7 +35,7 @@ public class AuthenticateController {
         return ResponseEntity.ok(loginResponse);
     }
 
-    //when the user enters the verification code
+    // User enters verification code here
     @PostMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestBody VerifyUserDto verifyUserDto) {
         try {
@@ -46,6 +46,7 @@ public class AuthenticateController {
         }
     }
 
+    // Resend verification code if user didn't get it
     @PostMapping("/resend")
     public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
         try {

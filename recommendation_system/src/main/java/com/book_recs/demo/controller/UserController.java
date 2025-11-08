@@ -18,6 +18,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    // Get current logged in user info
     @GetMapping("/me")
     public ResponseEntity<User> authenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -25,6 +26,7 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
+    // Get list of all users (admin only?)
     @GetMapping("/")
     public ResponseEntity<List<User>> allUsers() {
         List<User> users = userService.allUsers();

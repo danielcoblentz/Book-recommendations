@@ -11,35 +11,34 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.book_recs.demo.repository.UserRepository;
 
 @Configuration
-public class applicationConfiguration {
+public class ApplicationConfiguration {
 
     private final UserRepository userRepository;
 
-    public applicationConfiguration(UserRepository userRepository) {
+    public ApplicationConfiguration(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    //4 beans to be injected
-    //1. password encoder
+    // Load user by email for authentication
     @Bean
-    userDetailsService userDetailsService() {
+    UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    //2. password encoder
+    // Encrypt passwords with BCrypt
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     
 
-    //3. authentication manager
+    // Handle authentication requests
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    //4. authentication provider
+    // Connect user service with password encoder
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

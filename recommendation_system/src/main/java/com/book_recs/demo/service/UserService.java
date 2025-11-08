@@ -14,6 +14,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    // Get all users from database
     public List<User> allUsers() {
         return userRepository.findAll();
     }

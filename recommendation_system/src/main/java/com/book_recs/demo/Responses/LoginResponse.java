@@ -1,4 +1,4 @@
-package main.java.com.book_recs.demo.Responses;
+package main.java.com.book_recs.demo.responses;
 
 // auto getters and setters
 @Getter
